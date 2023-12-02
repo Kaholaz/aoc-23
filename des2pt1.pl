@@ -4,22 +4,14 @@ use warnings;
 use v5.34;
 
 my @possible_games = ();
-outer: while (<>) {
-	next if ($_ eq "\n");
-	$_ =~ /Game (\d+):/;
+while (<>) {
+	next if (/^$/);
+	/Game (\d+):/;
 	my $game = $1;
 
-	while ($_ =~ /(\d+) red/g) {
-		next outer if ($1 > 12);
-	}
-
-	while (my $green = $_ =~ /(\d+) green/g) {
-		next outer if ($1 > 13);
-	}
-
-	while (my $blue = $_ =~ /(\d+) blue/g) {
-		next outer if ($1 > 14);
-	}
+	next if (grep {$_ > 12} map {/\d+/; $&} /\d+ red/g);
+	next if (grep {$_ > 13} map {/\d+/; $&} /\d+ green/g);
+	next if (grep {$_ > 14} map {/\d+/; $&} /\d+ blue/g);
 
 	push @possible_games, $game;
 }
