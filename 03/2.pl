@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use v5.34;
-use List::Util qw(any sum);
+use List::Util qw(any sum reduce);
 
 my @input = ();
 while (<>) {
@@ -14,44 +14,29 @@ my $max_col = scalar @{$input[0]} - 1;
 
 # Find each number and make a list of (start, stop, row)
 my @nums = ();
-while (my ($r, $l) = each @input) {
-	my $current_num = [];
-	while (my ($c, $value) = each @$l) {
-		if (not $value =~ /\d/) {
-			push @nums, $current_num if (scalar @$current_num);
-			$current_num = [];
-			next;
-		}
-
-		if (scalar @$current_num) {
-			$current_num->[1] = $c;
-		} else {
-			$current_num = [$c, $c, $r];
-		}
+while (my ($r, $line) = each @input) {
+	my $line_str = join '', @$line;
+	while ($line_str =~ /\d+/g) {
+		push @nums, [$-[0], $+[0] - 1, $r];
 	}
-	push @nums, $current_num if (scalar @$current_num);
 }
 
 # A list of adjacent squares given (start, stop, row).
 sub adj {
 	my ($start, $stop, $row) = @_;
-	my @top =
-		map {[$_, $row - 1]}
+	my @row =
 		grep {$_ <= $max_col}
 		grep {$_ >= 0}
-		grep {$row > 0}
 		($start - 1..$stop + 1);
+
+	# The top row has no row above it, same for the bottom row.
+	my @top = $row == 0 ? () : map {[$_, $row - 1]} @row;
+	my @bot = $row == $max_row ? () : map {[$_, $row + 1]} @row;
 	my @sides =
 		map {[$_, $row]}
 		grep {$_ <= $max_col}
 		grep {$_ >= 0}
 		($start - 1, $stop + 1);
-	my @bot =
-		map {[$_, $row + 1]}
-		grep {$_ <= $max_col}
-		grep {$_ >= 0}
-		grep {$row < $max_row}
-		($start - 1..$stop + 1);
 	return (@top, @sides, @bot);
 }
 
@@ -62,11 +47,7 @@ my @part_num_pos =
 
 sub part_num {
 	my ($start, $end, $row) = @_;
-	my $out = '';
-	for my $col (($start..$end)) {
-		$out .= $input[$row]->[$col];
-	}
-	return $out;
+	return join '', map {$input[$row]->[$_]} ($start..$end);
 }
 
 my %adj_gears = ();
@@ -82,13 +63,8 @@ for (@part_num_pos) {
 	}
 }
 
-my $gears_product = 0;
-for (values %adj_gears) {
-	for (values %$_) {
-		if (scalar @$_ == 2) {
-			$gears_product += $_->[0] * $_->[1];
-		}
-	}
-}
+my $gears_product = reduce {$a + $b->[0] * $b->[1]} 0,
+	grep { scalar @$_ == 2 }
+	map { values %$_ } values %adj_gears; # Flatten
 
 say sum $gears_product;
