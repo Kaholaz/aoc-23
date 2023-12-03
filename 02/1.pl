@@ -1,4 +1,4 @@
-use List::Util qw(sum);
+use List::Util qw(sum any);
 use strict;
 use warnings;
 use v5.34;
@@ -9,9 +9,9 @@ while (<>) {
 	/Game (\d+):/;
 	my $game = $1;
 
-	next if (grep {$_ > 12} map {/\d+/; $&} /\d+ red/g);
-	next if (grep {$_ > 13} map {/\d+/; $&} /\d+ green/g);
-	next if (grep {$_ > 14} map {/\d+/; $&} /\d+ blue/g);
+	next if (any {$_ > 12} /(\d+) red/g);
+	next if (any {$_ > 13} /(\d+) green/g);
+	next if (any {$_ > 14} /(\d+) blue/g);
 
 	push @possible_games, $game;
 }
