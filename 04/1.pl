@@ -1,42 +1,32 @@
 use strict;
 use warnings;
 use v5.34;
-use List::Util qw(any sum reduce);
+use List::Util qw(sum);
 
-my @all_matches = ();
+my @num_matches = ();
 while (<>) {
-	next if ($_ eq "\n");
+	next if (not /^Card\s+(\d+):(.*)\|(.*)$/);
 
-	my ($game, $all_numbers) = split /:/;
-	my ($winnings, $numbers) = split /\|/, $all_numbers;
-	my @winnings = sort { $a <=> $b } map {/\d*/; $&} grep { length $_ } split / /, $winnings;
-	my @numbers = sort { $a <=> $b } map {/\d*/; $&} grep { length $_ } split / /, $numbers;
+	my ($game, $winnings, $numbers) = ($1, $2, $3);
+	my @winnings = sort { $a <=> $b } $winnings =~ /\d+/g;
+	my @numbers = sort { $a <=> $b } $numbers =~ /\d+/g;
 
-	my $matches = [];
+	my $num_matches = 0;
 	my $w = 0;
 	my $n = 0;
 	while ($w < (scalar @winnings) && $n < (scalar @numbers)) {
 		my $winning = $winnings[$w];
 		my $number = $numbers[$n];
-		if ($winning < $number) {
-			++$w;
-		} elsif ($winning > $number) {
-			++$n;
-		} elsif ($winning == $number) {
+		if ($winning < $number) { ++$w; }
+		elsif ($winning > $number) { ++$n; }
+		else {
 			++$w;
 			++$n;
-			push @$matches, $winning;
+			++$num_matches;
 		}
 	}
-	push @all_matches, $matches;
+	push @num_matches, $num_matches;
 }
 
-sub points {
-	my $numbers = shift;
-	my $l = scalar @$numbers;
-	return 0 if (not $l);
-	return 2 ** ($l - 1);
-}
-
-say sum map { points $_ } @all_matches;
+say sum map { $_ ? 2 ** ($_ - 1) : 0 } @num_matches;
 
