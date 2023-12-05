@@ -1,7 +1,7 @@
 use std::fs;
 use std::iter::zip;
 
-fn transform(dst: usize, src: usize, range: usize, old_seed: usize, default: usize) -> usize {
+fn transform(dst: u32, src: u32, range: u32, old_seed: u32, default: u32) -> u32 {
     return if old_seed < src || src + range <= old_seed {
         default
     } else {
@@ -15,8 +15,8 @@ fn main() {
 
     let seed_str = lines.next().unwrap();
     let mut seed_vec = vec![];
-    let mut prev = None::<usize>;
-    for u in seed_str.split(" ").filter_map(|c| c.parse::<usize>().ok()) {
+    let mut prev = None::<u32>;
+    for u in seed_str.split(" ").filter_map(|c| c.parse::<u32>().ok()) {
         match prev {
             Some(start) => {
                 seed_vec.append(&mut (start..start + u).collect());
@@ -26,7 +26,7 @@ fn main() {
         }
     }
     let mut seeds = seed_vec.into_iter();
-    let mut new_seeds: Vec<usize> = seeds.clone().collect();
+    let mut new_seeds: Vec<u32> = seeds.clone().collect();
 
     for (nr, line) in lines.enumerate() {
         println!("Line : {}", nr);
@@ -35,9 +35,9 @@ fn main() {
             continue;
         }
 
-        let mapping: Vec<usize> = line
+        let mapping: Vec<u32> = line
             .split_whitespace()
-            .filter_map(|n| n.parse::<usize>().ok())
+            .filter_map(|n| n.parse::<u32>().ok())
             .collect();
         if mapping.len() != 3 {
             continue;
