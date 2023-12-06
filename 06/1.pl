@@ -1,14 +1,10 @@
 use strict;
 use warnings;
 use v5.34;
-use List::Util qw(reduce);
 
 
 my @durations = <> =~ /\d+/g;
 my @distances = <> =~ /\d+/g;
-my $duration = reduce { $a . $b } @durations;
-my $distance = reduce { $a . $b } @distances;
-
 
 my $score = 1;
 for my $i (0..scalar @durations - 1) {
