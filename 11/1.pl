@@ -1,8 +1,7 @@
 use warnings;
 use strict;
 use v5.34;
-use List::Util qw(all any);
-use Data::Dumper;
+use List::Util qw(all);
 
 my @grid = ();
 while (<>) {

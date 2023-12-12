@@ -1,7 +1,6 @@
 use warnings;
 use strict;
 use v5.34;
-use Data::Dumper;
 
 my @grid = ();
 my @rows_to_explode = ();
