@@ -1,0 +1,5 @@
+Part 1 is a naive backtracking reccursive solution, and it is hella slow. The
+speedup needed for part 2 was achived through an improved algorithm +
+chacheing. Neither technique would have improved the efficiency enough for the
+solution to be possible on its own.
+
