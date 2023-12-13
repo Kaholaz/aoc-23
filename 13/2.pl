@@ -1,20 +1,12 @@
 use warnings;
 use strict;
 use v5.34;
-use List::Util qw(zip);
+use List::Util qw(zip reduce);
 
-my @input = ();
-my $picture = [];
-while (<>) {
-	if ($_ eq "\n") {
-		next if not @$picture;
-		push @input, $picture;
-		$picture = [];
-	} else {
-		chomp;
-		push @$picture, $_;
-	}
-}
+my $input =
+	reduce { $b ? push @{$a->[-1]}, $b : push @$a, []; $a } [[]],
+	map { chomp; $_ } <>;
+my @input = grep { @$_ } @$input;
 
 sub reflection_line {
 	my $start = 0;

@@ -1,43 +1,30 @@
 use warnings;
 use strict;
 use v5.34;
-use Data::Dumper;
+use List::Util qw(reduce all);
 
-my @input = ();
-my $picture = [];
-while (<>) {
-	if ($_ eq "\n") {
-		next if not @$picture;
-		push @input, $picture;
-		$picture = [];
-	} else {
-		chomp;
-		push @$picture, $_;
-	}
-}
+my $input =
+	reduce { $b ? push @{$a->[-1]}, $b : push @$a, []; $a } [[]],
+	map { chomp; $_ } <>;
+my @input = grep { @$_ } @$input;
 
 sub reflection_line {
 	my $start = 0;
 	for (my $end = int(scalar @_/2) * 2 - 1; $end > $start; $end -= 2) {
-		my $correct = 1;
-		for my $offset (0..int($end/2)) {
-			next if ($_[$start + $offset] eq $_[$end - $offset]);
-			$correct = 0;
-			last;
-		}
-		return ($end + 1) / 2 if $correct;
+		return ($end + $start + 1) / 2 if (
+			all { $_[$start + $_] eq $_[$end - $_] }
+			(0..int(($end - $start)/2))
+		);
 	}
 
 	my $end = scalar @_ - 1;
 	for ($start = scalar @_ % 2; $start < $end; $start += 2) {
-		my $correct = 1;
-		for my $offset (0..int(($end - $start)/2)) {
-			next if ($_[$start + $offset] eq $_[$end - $offset]);
-			$correct = 0;
-			last;
-		}
-		return ($end + $start + 1) / 2 if $correct;
+		return ($end + $start + 1) / 2 if (
+			all { $_[$start + $_] eq $_[$end - $_] }
+			(0..int(($end - $start)/2))
+		);
 	}
+
 	return -1;
 }
 
