@@ -1,24 +1,24 @@
 use warnings;
 use strict;
 use v5.34;
-use List::Util qw(reduce all);
+use List::Util qw(reduce);
 
 my @grid =  grep { @$_ } map { chomp; [split ''] } <>;
 
 for my $col (0..scalar @{$grid[0]} - 1) {
 	my $piv = 0;
-	for (my $piv = 0; $piv < scalar @grid;) {
-		for (; $piv < scalar @grid && not $grid[$piv]->[$col] =~ /\./; ++$piv) {}
+	while ($piv < scalar @grid) {
+		++$piv until $piv >= scalar @grid || $grid[$piv]->[$col] =~ /\./;
 
-		my $counter = $piv;
 		my $rocks = 0;
-		for (;$counter < scalar @grid; ++$counter) {
-			last if $grid[$counter]->[$col] =~ m/#/;
-			$rocks++ if $grid[$counter]->[$col] =~ s/O/./;
+		my $counter = $piv;
+		while ($counter < @grid && not $grid[$counter]->[$col] =~ m/#/) {
+			++$rocks if $grid[$counter]->[$col] =~ s/O/./;
+			++$counter;
 		}
 
-		for my $i ($piv..$piv + $rocks - 1) {
-			$grid[$i]->[$col] = 'O';
+		for (0..$rocks - 1) {
+			$grid[$piv + $_]->[$col] = 'O';
 		}
 		$piv = $counter;
 	}

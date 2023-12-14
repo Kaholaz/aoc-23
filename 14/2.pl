@@ -3,7 +3,7 @@
 use warnings;
 use strict;
 use v5.34;
-use List::Util qw(reduce all);
+use List::Util qw(reduce);
 
 my @grid =  grep { @$_ } map { chomp; [split ''] } <>;
 
@@ -15,7 +15,6 @@ for (1..$cycles) {
 	say $_ if not $_ % 1000;
 	# North
 	for my $col (0..scalar @{$grid[0]} - 1) {
-		my $piv = 0;
 		for (my $piv = 0; $piv < scalar @grid;) {
 			for (; $piv < scalar @grid && not $grid[$piv]->[$col] =~ /\./; ++$piv) {}
 
@@ -35,7 +34,6 @@ for (1..$cycles) {
 
 	# West
 	for my $col (0..scalar @grid - 1) {
-		my $piv = 0;
 		for (my $piv = 0; $piv < scalar @{$grid[0]};) {
 			for (; $piv < scalar @{$grid[0]} && not $grid[$col]->[$piv] =~ /\./; ++$piv) {}
 
@@ -108,7 +106,6 @@ my $remaining_loops = ($cycles - $cycle_start) % $period;
 for (1..$remaining_loops) {
 	# North
 	for my $col (0..scalar @{$grid[0]} - 1) {
-		my $piv = 0;
 		for (my $piv = 0; $piv < scalar @grid;) {
 			for (; $piv < scalar @grid && not $grid[$piv]->[$col] =~ /\./; ++$piv) {}
 
@@ -128,7 +125,6 @@ for (1..$remaining_loops) {
 
 	# West
 	for my $col (0..scalar @grid - 1) {
-		my $piv = 0;
 		for (my $piv = 0; $piv < scalar @{$grid[0]};) {
 			for (; $piv < scalar @{$grid[0]} && not $grid[$col]->[$piv] =~ /\./; ++$piv) {}
 
