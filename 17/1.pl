@@ -4,7 +4,8 @@ use v5.34;
 
 my @tiles =  grep { @$_ } map { chomp; [split ''] } <>;
 
-my %visited = ();
+my @visited_pipe = ();
+my @visited_dash = ();
 my $result;
 my $target = [$#tiles, $#{$tiles[0]}];
 my @queue = ([0, [0,0], '.']);
@@ -21,17 +22,9 @@ while (@queue) {
 	my ($dist, $pos, $dir) = @{$queue[$min_index]};
 	splice @queue, $min_index, 1;
 
-	my $pos_str = join ',', @$pos;
-	my $oposite = $dir eq '|' ? '-' : '|';
-	if (exists $visited{$pos_str}) {
-		if ($visited{$pos_str} eq $oposite) {
-			$visited{$pos_str} = 1;
-		} else {
-			next;
-		}
-	} else {
-		$visited{$pos_str} = $dir;
-	}
+	my $visited = $dir eq '|' ? \@visited_pipe : \@visited_dash;
+	next if ($visited->[$pos->[0]]->[$pos->[1]]);
+	$visited->[$pos->[0]]->[$pos->[1]] = 1;
 
 	say scalar @queue;
 
